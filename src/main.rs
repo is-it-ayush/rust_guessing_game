@@ -37,10 +37,10 @@ fn main() {
          * Now we are converting the string input to a unsigned 32 bit integer. The same type as our secret number.
          * This also returns a result as described above. The error needs to be handled properly for program to exit out.
          */
-        let guess: u32 = guess
-            .trim()
-            .parse()
-            .expect("There was a an error parsing the input to u32.");
+        let guess: u32 = match guess.trim().parse() {
+            Ok(num) => num,
+            Err(_) => continue, // Using a wildcard as a catch all. No matter what we get. Just continue.
+        };
 
         /*
          * Rust has pattern matching. It is nothing but a, "Hey look this can variable can be like this AND this." (notice AND).
