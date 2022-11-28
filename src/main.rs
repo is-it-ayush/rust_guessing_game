@@ -1,3 +1,4 @@
+use colored::*;
 use rand::Rng;
 use std::cmp::Ordering;
 use std::io;
@@ -7,11 +8,16 @@ use std::io;
 fn main() {
     // This is a cool banner. I like when my programs look nice.
     println!("------------------------------------------");
-    println!("Welcome to the Guessing Game!");
+    println!("Rusty Guessing Game!");
+    println!("Could you do it under 5 tries? *EVIL LAUGHS*");
     println!("------------------------------------------");
 
     // Game Logic
     let secret_number = rand::thread_rng().gen_range(1..=100);
+
+    // Making the game more fun by adding a counter.
+    // The counter will keep track of the number of guesses.
+    let mut counter = 0;
 
     // Loops are a way to loop indefinitely over instructions unless if break; is used to break out of the loop.
     loop {
@@ -26,7 +32,7 @@ fn main() {
         let mut guess = String::new();
 
         // Reading for the user input.
-        // Note: Look how Rust forces us to except for an error since read_line returns a result type and a enum with two variants.
+        // Note: Look how Rust forces us to except for an error since read_line returns a result type, a enum with two variants.
         // Ok(T) -> Which means, everything is good and returns the T Type value.
         // Err(E) -> Something went wrong and the program has crashed with the error E. This error needs to be managed.
         io::stdin()
@@ -44,16 +50,35 @@ fn main() {
 
         /*
          * Rust has pattern matching. It is nothing but a, "Hey look this can variable can be like this AND this." (notice AND).
-         * Every case needs to be managed explicitly or by using wildcards `_`.
+         * Every case needs to be managed explicitly or by using wildcards `_`. (catch all)
          * Here we use break; to break out of the loop. This is important otherwise it'll run indefinitely.
          */
         match guess.cmp(&secret_number) {
-            Ordering::Less => println!("Too Small!"),
+            Ordering::Less => println!("{}", "Too Small!".red()),
             Ordering::Equal => {
-                println!("You Win!");
-                break;
+                println!("{}", "You Win!".green());
+                match Option::Some(counter) {
+                    Some(x) if x <= 5 => {
+                        println!("It took you {} tries. You're a genius", counter);
+                        break;
+                    }
+                    Some(x) if x <= 10 => {
+                        println!("It took you {} tries. Not Bad!", counter);
+                        break;
+                    }
+                    Some(x) if x <= 20 => {
+                        println!(
+                            "It took you {} tries. It's okay. You'll do better next time!",
+                            counter
+                        );
+                        break;
+                    }
+                    _ => panic!(),
+                }
             }
-            Ordering::Greater => println!("Too Big!"),
+            Ordering::Greater => println!("{}", "Too Big!".red()),
         }
+
+        counter += 1;
     }
 }
